@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { listarClientes, cadastrarCliente } from '../../service/clientesService'
 import './style.css'
 
@@ -10,19 +10,19 @@ export default function Clientes() {
     telefone: '',
     cpf: ''
   })
-  const [carregando, setCarregando] = useState(true)
+  const [carregando, setCarregando] = useState(false)
   const [enviando, setEnviando] = useState(false)
-
-  useEffect(() => {
-    carregarClientes()
-  }, [])
+  const [listaVisivel, setListaVisivel] = useState(false)
 
   async function carregarClientes() {
+    setCarregando(true)
     try {
       const dados = await listarClientes()
       setClientes(dados)
+      setListaVisivel(true)
     } catch (error) {
       console.error('Erro ao carregar clientes:', error)
+      alert('Não foi possível carregar a lista.')
     } finally {
       setCarregando(false)
     }
@@ -43,7 +43,9 @@ export default function Clientes() {
     setEnviando(true)
     try {
       const novoCliente = await cadastrarCliente(form)
-      setClientes([...clientes, novoCliente])
+      if (listaVisivel) {
+        setClientes([...clientes, novoCliente])
+      }
       setForm({ nome: '', email: '', telefone: '', cpf: '' })
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)
@@ -122,23 +124,34 @@ export default function Clientes() {
       </section>
 
       <section className='clientes-lista'>
-        <h3>Clientes Cadastrados</h3>
+        <button
+          type='button'
+          className='btn-listar'
+          onClick={carregarClientes}
+          disabled={carregando}
+        >
+          {carregando ? 'Carregando...' : 'Listar Cadastro de Clientes'}
+        </button>
 
-        {carregando ? (
-          <p className='lista-vazia'>Carregando clientes...</p>
-        ) : clientes.length === 0 ? (
-          <p className='lista-vazia'>Nenhum cliente cadastrado ainda.</p>
-        ) : (
-          <ul>
-            {clientes.map((cliente) => (
-              <li key={cliente.id}>
-                <span className='cliente-nome'>{cliente.nome}</span>
-                <span>{cliente.email}</span>
-                <span>{cliente.telefone}</span>
-                <span>{cliente.cpf}</span>
-              </li>
-            ))}
-          </ul>
+        {listaVisivel && (
+          <>
+            <h3>Clientes Cadastrados</h3>
+
+            {clientes.length === 0 ? (
+              <p className='lista-vazia'>Nenhum cliente cadastrado ainda.</p>
+            ) : (
+              <ul>
+                {clientes.map((cliente) => (
+                  <li key={cliente.id}>
+                    <span className='cliente-nome'>{cliente.nome}</span>
+                    <span>{cliente.email}</span>
+                    <span>{cliente.telefone}</span>
+                    <span>{cliente.cpf}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
         )}
       </section>
     </div>

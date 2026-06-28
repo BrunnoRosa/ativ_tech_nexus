@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { listarFuncionarios, cadastrarFuncionario } from '../../service/funcionariosService'
 import './style.css'
 
@@ -11,19 +11,19 @@ export default function Funcionarios() {
     cargo: '',
     setor: ''
   })
-  const [carregando, setCarregando] = useState(true)
+  const [carregando, setCarregando] = useState(false)
   const [enviando, setEnviando] = useState(false)
-
-  useEffect(() => {
-    carregarFuncionarios()
-  }, [])
+  const [listaVisivel, setListaVisivel] = useState(false)
 
   async function carregarFuncionarios() {
+    setCarregando(true)
     try {
       const dados = await listarFuncionarios()
       setFuncionarios(dados)
+      setListaVisivel(true)
     } catch (error) {
       console.error('Erro ao carregar funcionários:', error)
+      alert('Não foi possível carregar a lista.')
     } finally {
       setCarregando(false)
     }
@@ -44,7 +44,9 @@ export default function Funcionarios() {
     setEnviando(true)
     try {
       const novoFuncionario = await cadastrarFuncionario(form)
-      setFuncionarios([...funcionarios, novoFuncionario])
+      if (listaVisivel) {
+        setFuncionarios([...funcionarios, novoFuncionario])
+      }
       setForm({ nome: '', telefone: '', email: '', cargo: '', setor: '' })
     } catch (error) {
       console.error('Erro ao cadastrar funcionário:', error)
@@ -134,24 +136,35 @@ export default function Funcionarios() {
       </section>
 
       <section className='funcionarios-lista'>
-        <h3>Funcionários Cadastrados</h3>
+        <button
+          type='button'
+          className='btn-listar'
+          onClick={carregarFuncionarios}
+          disabled={carregando}
+        >
+          {carregando ? 'Carregando...' : 'Listar Cadastro de Funcionários'}
+        </button>
 
-        {carregando ? (
-          <p className='lista-vazia'>Carregando funcionários...</p>
-        ) : funcionarios.length === 0 ? (
-          <p className='lista-vazia'>Nenhum funcionário cadastrado ainda.</p>
-        ) : (
-          <ul>
-            {funcionarios.map((funcionario) => (
-              <li key={funcionario.id}>
-                <span className='funcionario-nome'>{funcionario.nome}</span>
-                <span>{funcionario.telefone}</span>
-                <span>{funcionario.email}</span>
-                <span>{funcionario.cargo}</span>
-                <span>{funcionario.setor}</span>
-              </li>
-            ))}
-          </ul>
+        {listaVisivel && (
+          <>
+            <h3>Funcionários Cadastrados</h3>
+
+            {funcionarios.length === 0 ? (
+              <p className='lista-vazia'>Nenhum funcionário cadastrado ainda.</p>
+            ) : (
+              <ul>
+                {funcionarios.map((funcionario) => (
+                  <li key={funcionario.id}>
+                    <span className='funcionario-nome'>{funcionario.nome}</span>
+                    <span>{funcionario.telefone}</span>
+                    <span>{funcionario.email}</span>
+                    <span>{funcionario.cargo}</span>
+                    <span>{funcionario.setor}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
         )}
       </section>
     </div>
