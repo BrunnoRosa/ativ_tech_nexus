@@ -1,4 +1,6 @@
 import { useState } from 'react'
+// ORIENTAÇÃO 1: O componente depende dessas duas funções para conversar com o Spring Boot.
+// O teste real vai acontecer dentro deste arquivo importado abaixo.
 import { listarFuncionarios, cadastrarFuncionario } from '../../service/funcionariosService'
 import './style.css'
 
@@ -15,11 +17,13 @@ export default function Funcionarios() {
   const [enviando, setEnviando] = useState(false)
   const [listaVisivel, setListaVisivel] = useState(false)
 
+  // ORIENTAÇÃO 2: Essa função dispara quando você clica em "Listar Cadastro".
+  // Ela aguarda a resposta do Spring Boot (GET) e injeta o array recebido no estado 'funcionarios'.
   async function carregarFuncionarios() {
     setCarregando(true)
     try {
       const dados = await listarFuncionarios()
-      setFuncionarios(dados)
+      setFuncionarios(dados) // Aqui o React renderiza a lista vinda do banco de dados
       setListaVisivel(true)
     } catch (error) {
       console.error('Erro ao carregar funcionários:', error)
@@ -33,6 +37,8 @@ export default function Funcionarios() {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
+  // ORIENTAÇÃO 3: Dispara no envio do formulário. 
+  // Envia o objeto 'form' para o service, que por sua vez faz o POST no Spring Boot.
   async function handleSubmit(e) {
     e.preventDefault()
 
@@ -43,11 +49,17 @@ export default function Funcionarios() {
 
     setEnviando(true)
     try {
+      // O Spring Boot deve retornar o funcionário salvo (geralmente com o ID gerado pelo banco)
       const novoFuncionario = await cadastrarFuncionario(form)
+      
+      // Se a lista já estiver aberta na tela, adicionamos o novo elemento nela dinamicamente
       if (listaVisivel) {
         setFuncionarios([...funcionarios, novoFuncionario])
       }
+      
+      // Limpa os campos do formulário para o próximo cadastro
       setForm({ nome: '', telefone: '', email: '', cargo: '', setor: '' })
+      alert('Funcionário cadastrado com sucesso!') // Adicionado para dar um feedback visual
     } catch (error) {
       console.error('Erro ao cadastrar funcionário:', error)
       alert('Não foi possível cadastrar. Tente novamente.')
