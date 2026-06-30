@@ -47,6 +47,7 @@ export default function Clientes() {
         setClientes([...clientes, novoCliente])
       }
       setForm({ nome: '', email: '', telefone: '', cpf: '' })
+       alert('Cliente cadastrado com sucesso!') // Adicionado para dar um feedback visual
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)
       alert('Não foi possível cadastrar. Tente novamente.')

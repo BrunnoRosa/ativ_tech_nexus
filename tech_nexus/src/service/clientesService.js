@@ -1,12 +1,11 @@
-import axios from 'axios'
+//import axios from 'axios'
 
-const api = axios.create({
-  baseURL: 'http://localhost:8080/api/clientes'
-})
+const API_URL = 'http://localhost:8080/api/clientes';
+
 
 export async function listarClientes() {
   try{
-    const response = await fetch (api);
+    const response = await fetch (API_URL);
 
     if (!response.ok) {
       throw new Error('Erro ao buscar clientes no servidor.');
@@ -20,7 +19,7 @@ export async function listarClientes() {
 
 export async function cadastrarCliente(dadosFormulario) {
   try {
-    const response = await fetch(api, {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
