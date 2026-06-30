@@ -3,6 +3,7 @@ import { useState } from 'react'
 // O teste real vai acontecer dentro deste arquivo importado abaixo.
 import { listarFuncionarios, cadastrarFuncionario } from '../../service/funcionariosService'
 import './style.css'
+import { toast } from 'react-toastify'
 
 export default function Funcionarios() {
   const [funcionarios, setFuncionarios] = useState([])
@@ -27,7 +28,7 @@ export default function Funcionarios() {
       setListaVisivel(true)
     } catch (error) {
       console.error('Erro ao carregar funcionários:', error)
-      alert('Não foi possível carregar a lista.')
+      toast.error('Não foi possível carregar a lista.')
     } finally {
       setCarregando(false)
     }
@@ -43,7 +44,7 @@ export default function Funcionarios() {
     e.preventDefault()
 
     if (!form.nome || !form.telefone || !form.email || !form.cargo || !form.setor) {
-      alert('Preencha todos os campos.')
+      toast.error('Preencha todos os campos.')
       return
     }
 
@@ -59,10 +60,10 @@ export default function Funcionarios() {
       
       // Limpa os campos do formulário para o próximo cadastro
       setForm({ nome: '', telefone: '', email: '', cargo: '', setor: '' })
-      alert('Funcionário cadastrado com sucesso!') // Adicionado para dar um feedback visual
+      toast.success('Funcionário cadastrado com sucesso!') // Adicionado para dar um feedback visual
     } catch (error) {
       console.error('Erro ao cadastrar funcionário:', error)
-      alert('Não foi possível cadastrar. Tente novamente.')
+      toast.error('Não foi possível cadastrar. Tente novamente.')
     } finally {
       setEnviando(false)
     }
