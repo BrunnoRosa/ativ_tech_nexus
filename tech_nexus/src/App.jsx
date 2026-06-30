@@ -5,6 +5,7 @@ import Footer from './components/Footer'
 import Home from './pages/Home'
 import Clientes from './pages/Clientes'
 import Funcionarios from './pages/Funcionarios'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <ToastContainer autoClose={3000} position="top-right" />
     </>
   )
 }

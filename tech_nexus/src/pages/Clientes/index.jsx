@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { listarClientes, cadastrarCliente } from '../../service/clientesService'
 import './style.css'
+import { toast } from 'react-toastify'
 
 export default function Clientes() {
   const [clientes, setClientes] = useState([])
@@ -36,7 +37,7 @@ export default function Clientes() {
     e.preventDefault()
 
     if (!form.nome || !form.email || !form.telefone || !form.cpf) {
-      alert('Preencha todos os campos.')
+      toast.error('Preencha todos os campos.')
       return
     }
 
@@ -47,10 +48,10 @@ export default function Clientes() {
         setClientes([...clientes, novoCliente])
       }
       setForm({ nome: '', email: '', telefone: '', cpf: '' })
-       alert('Cliente cadastrado com sucesso!') // Adicionado para dar um feedback visual
+      toast.success('Cliente cadastrado com sucesso!') // Adicionado para dar um feedback visual
     } catch (error) {
       console.error('Erro ao cadastrar cliente:', error)
-      alert('Não foi possível cadastrar. Tente novamente.')
+      toast.error('Não foi possível cadastrar. Tente novamente.')
     } finally {
       setEnviando(false)
     }
